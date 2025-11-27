@@ -4,15 +4,15 @@ import java.util.concurrent.*;
 
 import static com.example.unsafe.Constants.*;
 
-public class SunUnsafeArraySynchronizedTest {
+public class PanamaArraySynchronizedTest {
 
     public static void main(String[] args) throws Exception {
 
-        Utils.printTestStart("sun misc unsafe synchronized test");
+        Utils.printTestStart("Panama synchronized add test");
 
         long startTime = System.nanoTime();
 
-        SunUnsafeArray array = new SunUnsafeArray(Long.BYTES * Byte.SIZE * NUMBER_OF_LONGS);
+        PanamaArray array = new PanamaArray(NUMBER_OF_LONGS);
         array.putLong(0, 0L);
 
         try (ExecutorService pool = Executors.newFixedThreadPool((int) NUMBER_OF_THREADS)) {
@@ -25,7 +25,7 @@ public class SunUnsafeArraySynchronizedTest {
             }
         } finally {
             long arrayContent = array.getLong(0);
-            array.free();
+            array.close();
 
             long endTime = System.nanoTime();
             double elapsedSeconds = (endTime - startTime) / 1_000_000_000.0;

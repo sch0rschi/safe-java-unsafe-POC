@@ -28,12 +28,11 @@ UNSAFE_NATIVE_LIB = $(TARGET_DIR)/libunsafejni.$(LIB_EXT)
 ATOMIC_NATIVE_LIB = $(TARGET_DIR)/libatomicjni.$(LIB_EXT)
 
 MAIN_UNSAFE = com.example.unsafe.UnsafeJniTest
-
 MAIN_ATOMIC = com.example.unsafe.AtomicJniTest
-
-MAIN_SUN_UNSAFE_SYNCHRONIZED = com.example.unsafe.SunUnsafeArraySynchronizedTest
-
 MAIN_SUN_UNSAFE_UNSYNCHRONIZED = com.example.unsafe.SunUnsafeArrayUnsynchronizedTest
+MAIN_SUN_UNSAFE_SYNCHRONIZED = com.example.unsafe.SunUnsafeArraySynchronizedTest
+MAIN_PANAMA_UNSYNCHRONIZED = com.example.unsafe.PanamaArrayUnsynchronizedTest
+MAIN_PANAMA_SYNCHRONIZED= com.example.unsafe.PanamaArraySynchronizedTest
 
 JNI_INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/$(JNI_OS_DIR)
 
@@ -65,11 +64,17 @@ run: build
 	        -Djava.library.path=target \
 	        -cp $(CLASS_DIR) $(MAIN_ATOMIC)
 	@$(JAVA) --enable-native-access=ALL-UNNAMED \
+    			-Djava.library.path=target \
+    			-cp $(CLASS_DIR) $(MAIN_SUN_UNSAFE_UNSYNCHRONIZED)
+	@$(JAVA) --enable-native-access=ALL-UNNAMED \
 			-Djava.library.path=target \
 			-cp $(CLASS_DIR) $(MAIN_SUN_UNSAFE_SYNCHRONIZED)
 	@$(JAVA) --enable-native-access=ALL-UNNAMED \
     			-Djava.library.path=target \
-    			-cp $(CLASS_DIR) $(MAIN_SUN_UNSAFE_UNSYNCHRONIZED)
+    			-cp $(CLASS_DIR) $(MAIN_PANAMA_UNSYNCHRONIZED)
+	@$(JAVA) --enable-native-access=ALL-UNNAMED \
+    			-Djava.library.path=target \
+    			-cp $(CLASS_DIR) $(MAIN_PANAMA_SYNCHRONIZED)
 
 clean:
 	rm -rf $(CLASS_DIR) $(TARGET_DIR)/*.h $(TARGET_DIR)/*.so $(TARGET_DIR)/*.dylib

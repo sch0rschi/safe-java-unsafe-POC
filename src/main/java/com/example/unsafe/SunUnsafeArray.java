@@ -35,10 +35,7 @@ public class SunUnsafeArray {
 
     public void addLongSafe(long index, long delta) {
         long offset = baseAddress + index * Long.BYTES;
-        long old;
-        do {
-            old = UNSAFE.getLongVolatile(null, offset);
-        } while (!UNSAFE.compareAndSwapLong(null, offset, old, old + delta));
+        UNSAFE.getAndAddLong(null, offset, delta);
     }
 
     public void addLongUnsafe(long index, long delta) {
