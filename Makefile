@@ -48,7 +48,7 @@ $(UNSAFE_NATIVE_LIB): $(JNI_HEADERS)
         -o $(UNSAFE_NATIVE_LIB) $(SRC_C)/UnsafeJniArray.c
 
 $(ATOMIC_NATIVE_LIB): $(JNI_HEADERS)
-	$(CC) -std=c11 -fPIC -shared \
+	$(CC) -std=c11 -fPIC -shared -O3 \
         -Itarget \
         -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/$(JNI_OS_DIR) \
         -o $(ATOMIC_NATIVE_LIB) $(SRC_C)/AtomicJniArray.c

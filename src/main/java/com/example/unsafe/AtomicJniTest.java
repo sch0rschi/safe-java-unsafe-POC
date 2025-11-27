@@ -2,17 +2,13 @@ package com.example.unsafe;
 
 import java.util.concurrent.*;
 
-public class AtomicJniTest {
+import static com.example.unsafe.Constants.*;
 
-    private static final long NUMBER_OF_THREADS = 64;
-    private static final long NUMBER_OF_LONGS = 1L;
-    private static final long NUMBER_OF_OPERATIONS = 1_000_000L;
+public class AtomicJniTest {
 
     public static void main(String[] args) throws Exception {
 
-        System.out.printf("=== Running atomic Jni C Interop test with %d threads and %d operations each. ===\n",
-                NUMBER_OF_THREADS,
-                NUMBER_OF_OPERATIONS);
+        Utils.printTestStart("atomic Jni C Interop test");
 
         long startTime = System.nanoTime();
 
@@ -34,9 +30,7 @@ public class AtomicJniTest {
             long endTime = System.nanoTime();
             double elapsedSeconds = (endTime - startTime) / 1_000_000_000.0;
 
-            long delta = NUMBER_OF_THREADS * NUMBER_OF_OPERATIONS - arrayContent;
-            System.out.printf("Race conditions: %d = %.3f%%.\n", delta, 100.0 * delta / NUMBER_OF_THREADS / NUMBER_OF_OPERATIONS);
-            System.out.printf("Elapsed time: %.3f seconds.\n", elapsedSeconds);
+            Utils.printResults(arrayContent, elapsedSeconds);
         }
     }
 }
