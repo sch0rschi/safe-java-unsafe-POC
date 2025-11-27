@@ -23,30 +23,43 @@ JAVA_SRCS := $(shell find $(SRC_JAVA) -name "*.java")
 
 JNI_HEADERS := $(patsubst $(SRC_JAVA)/%.java,$(TARGET_DIR)/%.h,$(JAVA_SRCS))
 
-NATIVE_LIB = $(TARGET_DIR)/libunsafejni.$(LIB_EXT)
+UNSAFE_NATIVE_LIB = $(TARGET_DIR)/libunsafejni.$(LIB_EXT)
 
-MAIN_CLASS = com.example.unsafe.UnsafeJniTest
+ATOMIC_NATIVE_LIB = $(TARGET_DIR)/libatomicjni.$(LIB_EXT)
+
+MAIN_UNSAFE = com.example.unsafe.UnsafeJniTest
+
+MAIN_ATOMIC = com.example.unsafe.AtomicJniTest
 
 JNI_INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/$(JNI_OS_DIR)
 
 all: build
 
-build: $(NATIVE_LIB)
+build: $(UNSAFE_NATIVE_LIB) $(ATOMIC_NATIVE_LIB)
 
 $(JNI_HEADERS): $(JAVA_SRCS)
 	mkdir -p $(CLASS_DIR) $(TARGET_DIR)
 	$(JAVAC) -h $(TARGET_DIR) -d $(CLASS_DIR) $(JAVA_SRCS)
 
-$(NATIVE_LIB): $(JNI_HEADERS)
-	$(CC) -fPIC -shared \
-	    -I$(TARGET_DIR) \
-	    $(JNI_INCLUDES) \
-	    -o $(NATIVE_LIB) $(SRC_C)/*.c
+$(UNSAFE_NATIVE_LIB): $(JNI_HEADERS)
+	$(CC) -std=c11 -fPIC -shared \
+        -Itarget \
+        -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/$(JNI_OS_DIR) \
+        -o $(UNSAFE_NATIVE_LIB) $(SRC_C)/UnsafeJniArray.c
+
+$(ATOMIC_NATIVE_LIB): $(JNI_HEADERS)
+	$(CC) -std=c11 -fPIC -shared \
+        -Itarget \
+        -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/$(JNI_OS_DIR) \
+        -o $(ATOMIC_NATIVE_LIB) $(SRC_C)/AtomicJniArray.c
 
 run: build
-	$(JAVA) --enable-native-access=ALL-UNNAMED \
-	        -Djava.library.path=$(TARGET_DIR) \
-	        -cp $(CLASS_DIR) $(MAIN_CLASS)
+	@$(JAVA) --enable-native-access=ALL-UNNAMED \
+	        -Djava.library.path=target \
+	        -cp $(CLASS_DIR) $(MAIN_UNSAFE)
+	@$(JAVA) --enable-native-access=ALL-UNNAMED \
+	        -Djava.library.path=target \
+	        -cp $(CLASS_DIR) $(MAIN_ATOMIC)
 
 clean:
 	rm -rf $(CLASS_DIR) $(TARGET_DIR)/*.h $(TARGET_DIR)/*.so $(TARGET_DIR)/*.dylib
