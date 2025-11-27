@@ -31,6 +31,10 @@ MAIN_UNSAFE = com.example.unsafe.UnsafeJniTest
 
 MAIN_ATOMIC = com.example.unsafe.AtomicJniTest
 
+MAIN_SUN_UNSAFE_SYNCHRONIZED = com.example.unsafe.SunUnsafeArraySynchronizedTest
+
+MAIN_SUN_UNSAFE_UNSYNCHRONIZED = com.example.unsafe.SunUnsafeArrayUnsynchronizedTest
+
 JNI_INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/$(JNI_OS_DIR)
 
 all: build
@@ -60,6 +64,12 @@ run: build
 	@$(JAVA) --enable-native-access=ALL-UNNAMED \
 	        -Djava.library.path=target \
 	        -cp $(CLASS_DIR) $(MAIN_ATOMIC)
+	@$(JAVA) --enable-native-access=ALL-UNNAMED \
+			-Djava.library.path=target \
+			-cp $(CLASS_DIR) $(MAIN_SUN_UNSAFE_SYNCHRONIZED)
+	@$(JAVA) --enable-native-access=ALL-UNNAMED \
+    			-Djava.library.path=target \
+    			-cp $(CLASS_DIR) $(MAIN_SUN_UNSAFE_UNSYNCHRONIZED)
 
 clean:
 	rm -rf $(CLASS_DIR) $(TARGET_DIR)/*.h $(TARGET_DIR)/*.so $(TARGET_DIR)/*.dylib
